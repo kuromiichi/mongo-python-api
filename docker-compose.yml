@@ -1,7 +1,7 @@
-version: '3.1'
+version: '3.8'
 
 services:
-  mongodb:
+  mongo:
     image: mongo
     ports:
       - 27017:27017
@@ -13,7 +13,16 @@ services:
   python:
     build: .
     depends_on:
-      - mongodb
-    volumes:
-      - ./app:/app
+      - mongo
+    ports:
+      - 5000:5000
+    develop:
+      watch:
+        - action: sync
+          path: ./app
+          target: /app
+        - action: rebuild
+          path: ./app/requirements.txt
+        - action: rebuild
+          path: ./Dockerfile
 

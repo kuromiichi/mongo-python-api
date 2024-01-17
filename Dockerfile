@@ -2,9 +2,8 @@ FROM python:alpine3.19
 
 WORKDIR /app
 
-COPY requirements.txt .
+COPY ./app .
+
 RUN pip install -r requirements.txt
 
-COPY ./app/ .
-
-CMD ["python", "api.py"]
+CMD [ "flask", "run", "--host=0.0.0.0" ]
