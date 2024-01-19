@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <title>Mongo-Python API</title>
+</head>
+
+<body>
+    <h1>Create note</h1>
+    <form action="/notes/create" method="post">
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="title">
+        <br>
+        <label for="content">Content:</label>
+        <input type="text" id="content" name="content">
+        <br>
+        <label for="date">Date:</label>
+        <input type="date" id="date" name="date">
+        <br><br>
+        <input type="submit" value="Submit">
+    </form>
+    <br>
+    <form action="/" method="get">
+        <button type="submit">Back</button>
+    </form>
+    <br>
+    <form action="/notes" method="get">
+        <button type="submit">List notes</button>
+    </form>
+
+</body>
+
+</html>
