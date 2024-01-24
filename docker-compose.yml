@@ -18,8 +18,9 @@ services:
       - "5000:5000"
     develop:
       watch:
-        - action: rebuild
+        - action: sync+restart
           path: ./app
+          target: /app
         - action: rebuild
           path: ./app/requirements.txt
         - action: rebuild

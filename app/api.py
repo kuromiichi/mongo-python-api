@@ -1,6 +1,5 @@
 from flask import Flask, jsonify, request
 
-import models
 import db_manager as dbm
 
 app = Flask(__name__)
@@ -13,26 +12,35 @@ host = "mongo"
 
 @app.route("/")
 def main():
-    client = dbm.connect(user, password, host)
-    db = client.testdb
+    db = dbm.connect(user, password, host).testdb
 
-    return {"status": dbm.test_connection(db)}
+    return jsonify({"status": dbm.test_connection(db)})
 
 
 @app.route("/notes", methods=["GET"])
 def find_notes():
-    client = dbm.connect(user, password, host)
-    db = client.testdb
+    db = dbm.connect(user, password, host).testdb
 
-    notes = dbm.find_notes(db)
-
+    notes = {str(note.pop("_id")): note for note in list(dbm.find_notes(db))}
     return jsonify({"notes": notes})
+
+
+@app.route("/notes/<note_id>", methods=["GET"])
+def find_note(note_id):
+    db = dbm.connect(user, password, host).testdb
+
+    try:
+        note = dbm.find_note(db, note_id)
+    except ValueError:
+        return jsonify({"error": "Invalid note ID"})
+
+    note = {str(note.pop("_id")): note} if note else "not found"
+    return jsonify({"note": note})
 
 
 @app.route("/notes", methods=["POST"])
 def create_note():
-    client = dbm.connect(user, password, host)
-    db = client.testdb
+    db = dbm.connect(user, password, host).testdb
 
     note = request.json
 
@@ -40,21 +48,26 @@ def create_note():
     return jsonify({"note_id": str(note_id)})
 
 
+@app.route("/notes/<note_id>", methods=["PUT"])
+def update_note(note_id):
+    db = dbm.connect(user, password, host).testdb
+
+    note = request.json
+    modified_count = dbm.update_note(db, note_id, note)
+    return jsonify({"updated": True if modified_count else False})
+
+
 @app.route("/notes", methods=["DELETE"])
 def delete_notes():
-    client = dbm.connect(user, password, host)
-    db = client.testdb
+    db = dbm.connect(user, password, host).testdb
 
-    dbm.delete_notes(db)
-
-    return jsonify({"status": "success"})
+    deleted_count = dbm.delete_notes(db)
+    return jsonify({"deleted": deleted_count})
 
 
 @app.route("/notes/<note_id>", methods=["DELETE"])
 def delete_note(note_id):
-    client = dbm.connect(user, password, host)
-    db = client.testdb
+    db = dbm.connect(user, password, host).testdb
 
-    dbm.delete_note(db, note_id)
-
-    return jsonify({"status": "success"})
+    deleted_count = dbm.delete_note(db, note_id)
+    return jsonify({"deleted": True if deleted_count else False})

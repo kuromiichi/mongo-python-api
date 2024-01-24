@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from datetime import datetime
 from enum import Enum
 
 
@@ -50,7 +49,6 @@ class SublistNote(Note):
     def __init__(self, title, date, is_done, content=None):
         super().__init__(title, date, is_done)
         self.type = NoteType.SUBLIST
-        if content:
-            self.content = content
-        else:
+        if content is None:
             self.content = []
+        self.content = content
